@@ -44,33 +44,37 @@ public class SimpleTaskManagerApplicationTests {
         taskResult("Task6", "initRes1Res3Res6", task6, "Res6");
     }
     private void checkThatTaskQueueIsEmpty() throws Exception {
-        mvc.perform(post("/simple-task-manager/task-take"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false));
+        mvc.perform(post("/simple-task-manager/task-take").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.success").value(false));
     }
     private void runNew(String startValue) throws Exception {
         mvc.perform(post("/simple-task-manager/run-new")
             .param("startValue", startValue).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.success").value(true));
     }
     private String taskTake(String expectedTaskName) throws Exception {
         String json = mvc.perform(post("/simple-task-manager/task-take")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.taskName").value(expectedTaskName))
-                .andReturn().getResponse().getContentAsString();
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.taskName").value(expectedTaskName))
+            .andReturn().getResponse().getContentAsString();
         return new JSONObject(json).getString("taskID");
     }
     private void taskResult(String expectedTaskName, String expectedResult, String taskID, String result) throws Exception {
         mvc.perform(post("/simple-task-manager/task-result")
-                .param("taskID", taskID)
-                .param("result", result)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.taskName").value(expectedTaskName))
-                .andExpect(jsonPath("$.taskResult").value(expectedResult));
+            .param("taskID", taskID)
+            .param("result", result)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$.success").value(true))
+            .andExpect(jsonPath("$.taskName").value(expectedTaskName))
+            .andExpect(jsonPath("$.taskResult").value(expectedResult));
     }
 }

@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ExceptionsController {
     @ExceptionHandler(Throwable.class)
     @ResponseBody
-    public ResponseEntity<String> ExceptionsController(Throwable e) {
+    public ResponseEntity<String> ExceptionHandler(Throwable e) {
         HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.APPLICATION_JSON);
+        header.setContentType(MediaType.APPLICATION_JSON_UTF8);
         return new ResponseEntity<>("{\"success\": false, \"error\": \"" + e.getMessage() + "\"}",
                 header, HttpStatus.NOT_FOUND);
     }

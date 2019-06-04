@@ -16,7 +16,7 @@ public class SimpleTaskManagerController {
      * Запускает процесс выполнения новой иерархии задач
      * @param startValue начальное значение для Task1
      */
-    @PostMapping(value = "/run-new", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/run-new", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String runNew(@RequestParam(value = "startValue") String startValue) throws Task.TaskBuilderException {
         Task newTask = new Task.Builder("Task1", startValue)
                 .addTask("Task2")
@@ -35,15 +35,14 @@ public class SimpleTaskManagerController {
      * Взятие задачи на исполнение воркером (startValue задачи установлено)
      * @return taskID и startValue задачи
      */
-    @PostMapping(value = "/task-take", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/task-take", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String taskTake() throws Exception {
         Task task = tasksWaiting.poll();
         if(task == null)
             throw new Exception("Очередь задач пуста");
         tasksInProgress.put(task.getID(), task);
-        return "{\"success\": true, \"taskID\": \"" + task.getID() +
-                "\", \"startValue\": \"" + task.getStartValue() +
-                "\", \"taskName\": \"" + task.getName() + "\"}";
+        return String.format("{\"success\": true, \"taskID\": \"%s\", \"startValue\": \"%s\", \"taskName\": \"%s\"}",
+            task.getID(), task.getStartValue(), task.getName());
     }
 
     /**
@@ -52,7 +51,7 @@ public class SimpleTaskManagerController {
      * @param result результат выполнения задачи
      * @return результат выполнения задачи (c учётом startValue)
      */
-    @PostMapping(value = "/task-result", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/task-result", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String taskResult(@RequestParam(value = "taskID") String taskID,
         @RequestParam(value = "result") String result) throws Exception
     {
@@ -62,12 +61,11 @@ public class SimpleTaskManagerController {
         tasksInProgress.remove(taskID);
         String taskResult = task.getStartValue() + result;
         List<Task> tasksReadyToRun = task.getDependentTasks();
-        for(Task t : tasksReadyToRun)
-            t.setStartValue(taskResult);
+        tasksReadyToRun.forEach(t -> t.setStartValue(taskResult));
         tasksWaiting.addAll(tasksReadyToRun);
 
-        return "{\"success\": true, \"taskResult\": \"" + taskResult +
-                "\", \"taskName\": \"" + task.getName() + "\"}";
+        return String.format("{\"success\": true, \"taskResult\": \"%s\", \"taskName\": \"%s\"}",
+            taskResult, task.getName());
     }
 
 }

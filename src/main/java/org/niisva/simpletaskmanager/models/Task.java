@@ -71,7 +71,13 @@ public class Task {
         }
 
         public Task build() {
+            clearParent(rootTask);
             return rootTask;
+        }
+
+        private static void clearParent(Task task) {
+            task.parent = null;
+            task.dependentTasks.forEach(Builder::clearParent);
         }
     }
 
