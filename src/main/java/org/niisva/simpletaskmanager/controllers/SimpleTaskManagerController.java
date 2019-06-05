@@ -5,12 +5,16 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @RestController
 @RequestMapping("/simple-task-manager")
 public class SimpleTaskManagerController {
-    private Queue<Task> tasksWaiting = new LinkedList<>();
-    private Map<String, Task> tasksInProgress = new HashMap<>();
+    private BlockingQueue<Task> tasksWaiting = new LinkedBlockingQueue<>();
+    private ConcurrentMap<String, Task> tasksInProgress = new ConcurrentHashMap<>();
 
     /**
      * Запускает процесс выполнения новой иерархии задач
