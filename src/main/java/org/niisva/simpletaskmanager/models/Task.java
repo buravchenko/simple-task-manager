@@ -1,9 +1,6 @@
 package org.niisva.simpletaskmanager.models;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class Task {
     private Task() { }
@@ -31,7 +28,7 @@ public class Task {
     }
 
     public List<Task> getDependentTasks() {
-        return dependentTasks;
+        return Collections.unmodifiableList(dependentTasks);
     }
 
     public static class Builder {
